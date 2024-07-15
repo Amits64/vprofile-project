@@ -16,6 +16,7 @@ pipeline {
         SONAR_PROJECT_KEY = 'vprofile-app'
         SONAR_HOST_URL = 'http://192.168.2.20:9000/'
         JAVA_HOME = '/usr/lib/jvm/java-1.8.0-openjdk-amd64'
+        PATH = "${JAVA_HOME}/bin:${env.PATH}"
     }
 
     stages {
