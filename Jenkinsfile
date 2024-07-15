@@ -31,13 +31,17 @@ pipeline {
 
         stage('Test') {
             steps {
-                sh 'mvn -s settings.xml test -X'
+                withCredentials([usernamePassword(credentialsId: 'nexuslogin', usernameVariable: 'NEXUS_USER', passwordVariable: 'NEXUS_PASS')]) {
+                    sh 'mvn -s settings.xml test'
+                }
             }
         }
 
         stage('Checkstyle Analysis') {
             steps {
-                sh 'mvn checkstyle:checkstyle'
+                withCredentials([usernamePassword(credentialsId: 'nexuslogin', usernameVariable: 'NEXUS_USER', passwordVariable: 'NEXUS_PASS')]) {
+                    sh 'mvn checkstyle:checkstyle'
+                }
             }
         }
     }
