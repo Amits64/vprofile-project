@@ -50,6 +50,15 @@ pipeline {
             }
         }
 
+        stage('Debug') {
+            steps {
+                sh 'echo "JAVA_HOME: $JAVA_HOME"'
+                sh 'echo "PATH: $PATH"'
+                sh 'which java'
+                sh 'java --version'
+            }
+        }
+
         stage('Code Quality') {
             steps {
                 script {
