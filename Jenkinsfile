@@ -17,8 +17,17 @@ pipeline {
     stages {
         stage('Build') {
             steps {
-                withCredentials([usernamePassword(credentialsId: 'nexuslogin', usernameVariable: 'NEXUS_USER', passwordVariable: 'NEXUS_PASS')]) {
-                    sh 'mvn -s settings.xml -DskipTests install -X'
+                script {
+                    // Use credentials to authenticate with Nexus repository
+                    withCredentials([usernamePassword(credentialsId: 'nexuslogin', usernameVariable: 'NEXUS_USER', passwordVariable: 'NEXUS_PASS')]) {
+                        // Run Maven build with necessary settings
+                        def mvnCmd = "mvn -s settings.xml -DskipTests install -X"
+                        def mvnBuild = bat(script: mvnCmd, returnStatus: true)
+
+                        if (mvnBuild != 0) {
+                            error "Maven build failed: ${mvnBuild}"
+                        }
+                    }
                 }
             }
             post {
@@ -31,13 +40,29 @@ pipeline {
 
         stage('Test') {
             steps {
-                sh 'mvn -s settings.xml test'
+                script {
+                    // Run Maven tests
+                    def mvnTestCmd = "mvn -s settings.xml test"
+                    def mvnTest = bat(script: mvnTestCmd, returnStatus: true)
+
+                    if (mvnTest != 0) {
+                        error "Maven test execution failed: ${mvnTest}"
+                    }
+                }
             }
         }
 
         stage('Checkstyle Analysis') {
             steps {
-                sh 'mvn checkstyle:checkstyle'
+                script {
+                    // Run Checkstyle analysis
+                    def mvnCheckstyleCmd = "mvn checkstyle:checkstyle"
+                    def mvnCheckstyle = bat(script: mvnCheckstyleCmd, returnStatus: true)
+
+                    if (mvnCheckstyle != 0) {
+                        error "Checkstyle analysis failed: ${mvnCheckstyle}"
+                    }
+                }
             }
         }
     }
