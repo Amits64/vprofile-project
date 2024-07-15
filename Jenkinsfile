@@ -18,7 +18,7 @@ pipeline {
         stage('Build') {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'nexuslogin', usernameVariable: 'NEXUS_USER', passwordVariable: 'NEXUS_PASS')]) {
-                    sh 'mvn -s settings.xml -DskipTests install'
+                    sh 'mvn -s settings.xml -DskipTests install -X'
                 }
             }
         }
