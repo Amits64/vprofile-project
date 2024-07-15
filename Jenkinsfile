@@ -12,6 +12,9 @@ pipeline {
         NEXUSIP = '192.168.2.20'
         NEXUSPORT = '8081'
         NEXUS_GRP_REPO = 'vpro-maven-group'
+        SONAR_SCANNER_IMAGE = 'sonarsource/sonar-scanner-cli:latest'
+        SONAR_PROJECT_KEY = 'vprofile-app'
+        SONAR_HOST_URL = 'http://192.168.2.20:9000/'
     }
 
     stages {
@@ -41,6 +44,28 @@ pipeline {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'nexuslogin', usernameVariable: 'NEXUS_USER', passwordVariable: 'NEXUS_PASS')]) {
                     sh 'mvn -s settings.xml checkstyle:checkstyle'
+                }
+            }
+        }
+
+        stage('Code Quality') {
+            steps {
+                script {
+                    docker.image(env.SONAR_SCANNER_IMAGE).inside('-u root') {
+                        withSonarQubeEnv('sonarqube') {
+                            sh """
+                            sonar-scanner \
+                            -Dsonar.projectName=vprofile \
+                            -Dsonar.projectVersion=1.0 \
+                            -Dsonar.sources=src/ \
+                            -Dsonar.java.binaries=target/test-classes/com/visualpathit/account/controllerTest/ \
+                            -Dsonar.junit.reportsPath=target/surefire-reports/ \
+                            -Dsonar.jacoco.reportsPath=target/jacoco.exec \
+                            -Dsonar.java.checkstyle.reportPaths=target/checkstyle-result.xml
+                            -Dsonar.projectKey=${env.SONAR_PROJECT_KEY} \
+                            """
+                        }
+                    }
                 }
             }
         }
