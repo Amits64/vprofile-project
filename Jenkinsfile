@@ -30,7 +30,7 @@ pipeline {
         }
 
         stage('Test') {
-            sh 'mvn test'
+            sh 'mvn -s settings.xml test'
         }
 
         stage('Chechstyle Analysis') {
