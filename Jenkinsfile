@@ -9,6 +9,7 @@ pipeline {
         SNAP_REPO = 'vprofile-snapshot'
         RELEASE_REPO = 'vprofile-release'
         CENTRAL_REPO = 'vpro-maven-central'
+        NEXUS_LOGIN = 'nexuslogin'
         NEXUSIP = '192.168.2.20'
         NEXUSPORT = '8081'
         NEXUS_GRP_REPO = 'vpro-maven-group'
