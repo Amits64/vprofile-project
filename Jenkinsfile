@@ -6,17 +6,11 @@ pipeline {
     }
 
     environment {
-        SNAP_REPO = 'vprofile-snapshot'
-        RELEASE_REPO = 'vprofile-release'
-        CENTRAL_REPO = 'vpro-maven-central'
-        NEXUSIP = '192.168.2.20'
-        NEXUSPORT = '8081'
-        NEXUS_GRP_REPO = 'vpro-maven-group'
-        SONAR_SCANNER_IMAGE = 'sonarsource/sonar-scanner-cli:latest'
-        SONAR_PROJECT_KEY = 'vprofile-app'
-        SONAR_HOST_URL = 'http://192.168.2.20:9000/'
         JAVA_HOME = '/usr'
         PATH = "${JAVA_HOME}/bin:/opt/sonar-scanner/bin:${env.PATH}"
+        SONAR_PROJECT_KEY = 'vprofile-app'
+        SONAR_HOST_URL = 'http://192.168.2.20:9000/'
+        SONAR_SCANNER_IMAGE = 'sonarsource/sonar-scanner-cli:latest'
     }
 
     stages {
@@ -30,7 +24,7 @@ pipeline {
                 }
             }
         }
-        
+
         stage('Build') {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'nexuslogin', usernameVariable: 'NEXUS_USER', passwordVariable: 'NEXUS_PASS')]) {
@@ -64,13 +58,13 @@ pipeline {
         stage('Code Quality') {
             steps {
                 script {
-                    docker.image(env.SONAR_SCANNER_IMAGE).inside('-u root -e JAVA_HOME=${JAVA_HOME} -e PATH=${JAVA_HOME}/bin:/opt/sonar-scanner/bin:${env.PATH}') {
+                    docker.image(env.SONAR_SCANNER_IMAGE).inside('-u root') {
                         withSonarQubeEnv('sonarqube') {
                             sh """
                             export JAVA_HOME=${JAVA_HOME}
                             export PATH=${JAVA_HOME}/bin:/opt/sonar-scanner/bin:${env.PATH}
                             /opt/sonar-scanner/bin/sonar-scanner \
-                            -Dsonar.projectKey=${env.SONAR_PROJECT_KEY} \
+                            -Dsonar.projectKey=${SONAR_PROJECT_KEY} \
                             -Dsonar.projectVersion=1.0 \
                             -Dsonar.sources=src/ \
                             -Dsonar.java.binaries=target/test-classes/com/visualpathit/account/controllerTest/ \
