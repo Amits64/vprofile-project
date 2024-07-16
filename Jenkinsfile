@@ -6,17 +6,17 @@ pipeline {
     }
 
     environment {
-        JAVA_HOME = '/usr'
-        PATH = "${JAVA_HOME}/bin:/opt/sonar-scanner/bin:${env.PATH}"
-        SONAR_PROJECT_KEY = 'vprofile-app'
-        SONAR_HOST_URL = 'http://192.168.2.20:9000/'
-        SONAR_SCANNER_IMAGE = 'sonarsource/sonar-scanner-cli:latest'
         SNAP_REPO = 'vprofile-snapshot'
         RELEASE_REPO = 'vprofile-release'
         CENTRAL_REPO = 'vpro-maven-central'
         NEXUSIP = '192.168.2.20'
         NEXUSPORT = '8081'
         NEXUS_GRP_REPO = 'vpro-maven-group'
+        SONAR_SCANNER_IMAGE = 'sonarsource/sonar-scanner-cli:latest'
+        SONAR_PROJECT_KEY = 'vprofile-app'
+        SONAR_HOST_URL = 'http://192.168.2.20:9000/'
+        JAVA_HOME = '/usr/lib/jvm/java-1.8.0-openjdk-amd64'
+        PATH = "${JAVA_HOME}/bin:${env.PATH}:/opt/sonar-scanner/bin"
     }
 
     stages {
@@ -30,7 +30,7 @@ pipeline {
                 }
             }
         }
-
+        
         stage('Build') {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'nexuslogin', usernameVariable: 'NEXUS_USER', passwordVariable: 'NEXUS_PASS')]) {
@@ -67,10 +67,8 @@ pipeline {
                     docker.image(env.SONAR_SCANNER_IMAGE).inside('-u root') {
                         withSonarQubeEnv('sonarqube') {
                             sh """
-                            export JAVA_HOME=${JAVA_HOME}
-                            export PATH=${JAVA_HOME}/bin:/opt/sonar-scanner/bin:${env.PATH}
                             /opt/sonar-scanner/bin/sonar-scanner \
-                            -Dsonar.projectKey=${SONAR_PROJECT_KEY} \
+                            -Dsonar.projectKey=${env.SONAR_PROJECT_KEY} \
                             -Dsonar.projectVersion=1.0 \
                             -Dsonar.sources=src/ \
                             -Dsonar.java.binaries=target/test-classes/com/visualpathit/account/controllerTest/ \
