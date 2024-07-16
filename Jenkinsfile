@@ -55,7 +55,7 @@ pipeline {
                 sh 'echo "JAVA_HOME: $JAVA_HOME"'
                 sh 'echo "PATH: $PATH"'
                 sh 'which java'
-                sh 'java --version'
+                sh 'java -version'
             }
         }
 
