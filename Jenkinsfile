@@ -20,6 +20,17 @@ pipeline {
     }
 
     stages {
+        stage('Debug Java Version') {
+            steps {
+                script {
+                    sh 'echo JAVA_HOME: ${JAVA_HOME}'
+                    sh 'echo PATH: ${PATH}'
+                    sh 'which java'
+                    sh 'java -version'
+                }
+            }
+        }
+        
         stage('Build') {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'nexuslogin', usernameVariable: 'NEXUS_USER', passwordVariable: 'NEXUS_PASS')]) {
@@ -50,19 +61,10 @@ pipeline {
             }
         }
 
-        stage('Debug') {
-            steps {
-                sh 'echo "JAVA_HOME: $JAVA_HOME"'
-                sh 'echo "PATH: $PATH"'
-                sh 'which java'
-                sh 'java -version'
-            }
-        }
-
         stage('Code Quality') {
             steps {
                 script {
-                    docker.image(env.SONAR_SCANNER_IMAGE).inside('-u root') {
+                    docker.image(env.SONAR_SCANNER_IMAGE).inside('-u root -e JAVA_HOME=${JAVA_HOME} -e PATH=${PATH}') {
                         withSonarQubeEnv('sonarqube') {
                             sh """
                             sonar-scanner \
