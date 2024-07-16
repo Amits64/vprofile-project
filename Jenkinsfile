@@ -11,6 +11,12 @@ pipeline {
         SONAR_PROJECT_KEY = 'vprofile-app'
         SONAR_HOST_URL = 'http://192.168.2.20:9000/'
         SONAR_SCANNER_IMAGE = 'sonarsource/sonar-scanner-cli:latest'
+        SNAP_REPO = 'vprofile-snapshot'
+        RELEASE_REPO = 'vprofile-release'
+        CENTRAL_REPO = 'vpro-maven-central'
+        NEXUSIP = '192.168.2.20'
+        NEXUSPORT = '8081'
+        NEXUS_GRP_REPO = 'vpro-maven-group'
     }
 
     stages {
