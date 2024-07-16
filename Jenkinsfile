@@ -7,16 +7,16 @@ pipeline {
     
     environment {
         SNAP_REPO = 'vprofile-snapshot'
-        NEXUS_USER = 'admin'
-        NEXUS_PASS = 'Password1!'
         RELEASE_REPO = 'vprofile-release'
         CENTRAL_REPO = 'vpro-maven-central'
-        NEXUSIP = '172.31.5.4'
+        NEXUSIP = '192.168.2.20'
         NEXUSPORT = '8081'
         NEXUS_GRP_REPO = 'vpro-maven-group'
-        NEXUS_LOGIN = 'nexuslogin'
-        SONARSERVER = 'sonarserver'
-        SONARSCANNER = 'sonarscanner'
+        SONAR_SCANNER_IMAGE = 'sonarsource/sonar-scanner-cli:latest'
+        SONAR_PROJECT_KEY = 'vprofile-app'
+        SONAR_HOST_URL = 'http://192.168.2.20:9000/'
+        JAVA_HOME = '/usr'
+        PATH = "${JAVA_HOME}/bin:/opt/sonar-scanner/bin:${env.PATH}"
     }
 
     stages {
