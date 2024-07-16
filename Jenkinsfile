@@ -67,7 +67,7 @@ pipeline {
                     docker.image(env.SONAR_SCANNER_IMAGE).inside('-u root -e JAVA_HOME=${JAVA_HOME} -e PATH=${PATH}') {
                         withSonarQubeEnv('sonarqube') {
                             sh """
-                            sonar-scanner \
+                            /opt/sonar-scanner/bin/sonar-scanner \
                             -Dsonar.projectKey=${env.SONAR_PROJECT_KEY} \
                             -Dsonar.projectVersion=1.0 \
                             -Dsonar.sources=src/ \
