@@ -15,8 +15,8 @@ pipeline {
         SONAR_SCANNER_IMAGE = 'sonarsource/sonar-scanner-cli:latest'
         SONAR_PROJECT_KEY = 'vprofile-app'
         SONAR_HOST_URL = 'http://192.168.2.20:9000/'
-        JAVA_HOME = '/usr/lib/jvm/java-1.8.0-openjdk-amd64'
-        PATH = "${JAVA_HOME}/bin:${env.PATH}:/opt/sonar-scanner/bin"
+        JAVA_HOME = '/usr'
+        PATH = "${JAVA_HOME}/bin:/opt/sonar-scanner/bin:${env.PATH}"
     }
 
     stages {
@@ -64,9 +64,11 @@ pipeline {
         stage('Code Quality') {
             steps {
                 script {
-                    docker.image(env.SONAR_SCANNER_IMAGE).inside('-u root -e JAVA_HOME=${JAVA_HOME} -e PATH=${PATH}:/opt/sonar-scanner/bin') {
+                    docker.image(env.SONAR_SCANNER_IMAGE).inside('-u root -e JAVA_HOME=${JAVA_HOME} -e PATH=${JAVA_HOME}/bin:/opt/sonar-scanner/bin:${env.PATH}') {
                         withSonarQubeEnv('sonarqube') {
                             sh """
+                            export JAVA_HOME=${JAVA_HOME}
+                            export PATH=${JAVA_HOME}/bin:/opt/sonar-scanner/bin:${env.PATH}
                             /opt/sonar-scanner/bin/sonar-scanner \
                             -Dsonar.projectKey=${env.SONAR_PROJECT_KEY} \
                             -Dsonar.projectVersion=1.0 \
