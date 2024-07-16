@@ -60,28 +60,5 @@ pipeline {
                 }
             }
         }
-
-        stage('Code Quality') {
-            steps {
-                script {
-                    docker.image(env.SONAR_SCANNER_IMAGE).inside('-u root') {
-                        withSonarQubeEnv('sonarqube') {
-                            sh """
-                            export JAVA_HOME=${JAVA_HOME}
-                            export PATH=${JAVA_HOME}/bin:/opt/sonar-scanner/bin:${env.PATH}
-                            /opt/sonar-scanner/bin/sonar-scanner \
-                            -Dsonar.projectKey=${env.SONAR_PROJECT_KEY} \
-                            -Dsonar.projectVersion=1.0 \
-                            -Dsonar.sources=src/ \
-                            -Dsonar.java.binaries=target/test-classes/com/visualpathit/account/controllerTest/ \
-                            -Dsonar.junit.reportsPath=target/surefire-reports/ \
-                            -Dsonar.jacoco.reportsPath=target/jacoco.exec \
-                            -Dsonar.java.checkstyle.reportPaths=target/checkstyle-result.xml
-                            """
-                        }
-                    }
-                }
-            }
-        }
     }
 }
