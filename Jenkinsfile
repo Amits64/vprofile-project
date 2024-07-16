@@ -68,7 +68,6 @@ pipeline {
                         withSonarQubeEnv('sonarqube') {
                             sh """
                             sonar-scanner \
-                            -Dsonar.projectName=vprofile-app \
                             -Dsonar.projectKey=${env.SONAR_PROJECT_KEY} \
                             -Dsonar.projectVersion=1.0 \
                             -Dsonar.sources=src/ \
