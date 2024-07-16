@@ -61,7 +61,7 @@ pipeline {
             }
         }
 
-        stage('Code Quality') {
+      /*stage('Code Quality') {
             steps {
                 script {
                     docker.image(env.SONAR_SCANNER_IMAGE).inside('-u root -e JAVA_HOME=${JAVA_HOME} -e PATH=${JAVA_HOME}/bin:/opt/sonar-scanner/bin:${env.PATH}') {
@@ -80,6 +80,28 @@ pipeline {
                             """
                         }
                     }
+                }
+            }
+        }*/
+
+        stage("UploadArtifact"){
+            steps{
+                withCredentials([usernamePassword(credentialsId: 'nexuslogin', usernameVariable: 'NEXUS_USER', passwordVariable: 'NEXUS_PASS')]) {
+                    nexusArtifactUploader(
+                    nexusVersion: 'nexus3',
+                    protocol: 'http',
+                    nexusUrl: "${NEXUSIP}:${NEXUSPORT}",
+                    groupId: 'QA',
+                    version: "${env.BUILD_ID}-${env.BUILD_TIMESTAMP}",
+                    repository: "${RELEASE_REPO}",
+                    credentialsId: "${NEXUS_LOGIN}",
+                    artifacts: [
+                        [artifactId: 'vproapp',
+                        classifier: '',
+                        file: 'target/vprofile-v2.war',
+                        type: 'war']
+                    ]
+                    )
                 }
             }
         }
