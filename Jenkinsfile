@@ -1,3 +1,8 @@
+def COLOR_MAP = [
+    'SUCCESS': 'good',
+    'FAILURE': 'danger'
+]
+
 pipeline {
     agent any
     tools {
@@ -21,14 +26,9 @@ pipeline {
     }
 
     stages {
-        stage('Debug Java Version') {
+        stage('Fetch code') {
             steps {
-                script {
-                    sh 'echo JAVA_HOME: ${JAVA_HOME}'
-                    sh 'echo PATH: ${PATH}'
-                    sh 'which java'
-                    sh 'java -version'
-                }
+                git branch: 'vp-rem', url: 'https://github.com/Amits64/vprofile-project.git'
             }
         }
 
