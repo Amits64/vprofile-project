@@ -26,9 +26,14 @@ pipeline {
     }
 
     stages {
-        stage('Fetch code') {
+        stage('Debug Java Version') {
             steps {
-                git branch: 'vp-rem', url: 'https://github.com/Amits64/vprofile-project.git'
+                script {
+                    sh 'echo JAVA_HOME: ${JAVA_HOME}'
+                    sh 'echo PATH: ${PATH}'
+                    sh 'which java'
+                    sh 'java -version'
+                }
             }
         }
 
