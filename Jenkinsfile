@@ -31,7 +31,7 @@ pipeline {
                 }
             }
         }
-        
+
         stage('Build') {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'nexuslogin', usernameVariable: 'NEXUS_USER', passwordVariable: 'NEXUS_PASS')]) {
@@ -70,6 +70,10 @@ pipeline {
                             sh """
                             export JAVA_HOME=${JAVA_HOME}
                             export PATH=${JAVA_HOME}/bin:/opt/sonar-scanner/bin:${env.PATH}
+                            echo "JAVA_HOME=${JAVA_HOME}"
+                            echo "PATH=${PATH}"
+                            which java
+                            java -version
                             /opt/sonar-scanner/bin/sonar-scanner \
                             -Dsonar.projectKey=${env.SONAR_PROJECT_KEY} \
                             -Dsonar.projectVersion=1.0 \
@@ -85,23 +89,23 @@ pipeline {
             }
         }
 
-        stage("UploadArtifact"){
-            steps{
+        stage("UploadArtifact") {
+            steps {
                 withCredentials([usernamePassword(credentialsId: 'nexuslogin', usernameVariable: 'NEXUS_USER', passwordVariable: 'NEXUS_PASS')]) {
                     nexusArtifactUploader(
-                    nexusVersion: 'nexus3',
-                    protocol: 'http',
-                    nexusUrl: "${NEXUSIP}:${NEXUSPORT}",
-                    groupId: 'QA',
-                    version: "${env.BUILD_ID}-${env.BUILD_TIMESTAMP}",
-                    repository: "${RELEASE_REPO}",
-                    credentialsId: "${NEXUS_LOGIN}",
-                    artifacts: [
-                        [artifactId: 'vproapp',
-                        classifier: '',
-                        file: 'target/vprofile-v2.war',
-                        type: 'war']
-                    ]
+                        nexusVersion: 'nexus3',
+                        protocol: 'http',
+                        nexusUrl: "${NEXUSIP}:${NEXUSPORT}",
+                        groupId: 'QA',
+                        version: "${env.BUILD_ID}-${env.BUILD_TIMESTAMP}",
+                        repository: "${RELEASE_REPO}",
+                        credentialsId: "${NEXUS_LOGIN}",
+                        artifacts: [
+                            [artifactId: 'vproapp',
+                             classifier: '',
+                             file: 'target/vprofile-v2.war',
+                             type: 'war']
+                        ]
                     )
                 }
             }
