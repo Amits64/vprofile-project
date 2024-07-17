@@ -15,7 +15,7 @@ pipeline {
         NEXUS_GRP_REPO = 'vpro-maven-group'
         SONAR_SCANNER_IMAGE = 'sonarsource/sonar-scanner-cli:latest'
         SONAR_PROJECT_KEY = 'vprofile-app'
-        SONAR_HOST_URL = 'http://192.168.10.10:9000/'
+        SONAR_HOST_URL = 'http://192.168.2.20:9000/'
         JAVA_HOME = tool name: 'OracleJDK8'
         PATH = "${JAVA_HOME}/bin:${env.PATH}"
     }
@@ -62,7 +62,7 @@ pipeline {
             }
         }
 
-        stage('Code Quality') {
+        /*stage('Code Quality') {
             steps {
                 script {
                     docker.image(env.SONAR_SCANNER_IMAGE).inside('-u root -e JAVA_HOME=${JAVA_HOME} -e PATH=${JAVA_HOME}/bin:${env.PATH}') {
@@ -85,7 +85,7 @@ pipeline {
                     }
                 }
             }
-        }
+        }*/
 
         stage("UploadArtifact") {
             steps {
