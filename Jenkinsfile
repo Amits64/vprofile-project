@@ -104,7 +104,7 @@ pipeline {
                             color: COLOR_MAP[currentBuild.currentResult],
                             message: """
                             *${currentBuild.currentResult}:* SonarQube analysis for ${env.JOB_NAME} build ${env.BUILD_NUMBER}
-                            Status: ${analysisStatus}
+                            Status: ${currentBuild.currentResult}
                             More info: ${analysisLink}
                             """
                         )
