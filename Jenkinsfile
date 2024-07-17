@@ -21,6 +21,7 @@ pipeline {
         SONAR_SCANNER_IMAGE = 'sonarsource/sonar-scanner-cli:latest'
         SONAR_PROJECT_KEY = 'vprofile-app'
         SONAR_HOST_URL = 'http://192.168.10.10:9000/'
+        SONAR_PROJECT_NAME = 'vprofile-app'
         JAVA_HOME = tool name: 'OracleJDK8'
         PATH = "${JAVA_HOME}/bin:${env.PATH}"
     }
@@ -79,6 +80,7 @@ pipeline {
                             java -version
                             /opt/sonar-scanner/bin/sonar-scanner \
                             -Dsonar.projectKey=${env.SONAR_PROJECT_KEY} \
+                            -Dsonar.projectName=${SONAR_PROJECT_NAME} \
                             -Dsonar.projectVersion=1.0 \
                             -Dsonar.sources=src/ \
                             -Dsonar.java.binaries=target/test-classes/com/visualpathit/account/controllerTest/ \
