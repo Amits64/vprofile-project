@@ -16,8 +16,8 @@ pipeline {
         SONAR_SCANNER_IMAGE = 'sonarsource/sonar-scanner-cli:latest'
         SONAR_PROJECT_KEY = 'vprofile-app'
         SONAR_HOST_URL = 'http://192.168.10.10:9000/'
-        JAVA_HOME = '/usr'
-        PATH = "${JAVA_HOME}/bin:/opt/sonar-scanner/bin:${env.PATH}"
+        JAVA_HOME = tool name: 'OracleJDK8'
+        PATH = "${JAVA_HOME}/bin:${env.PATH}"
     }
 
     stages {
