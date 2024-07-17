@@ -90,6 +90,14 @@ pipeline {
                     }
                 }
             }
+            post {
+                always {
+                    echo 'Slack Notifications.'
+                    slackSend channel: '#jenkinscicd',
+                        color: COLOR_MAP[currentBuild.currentResult],
+                        message: "Click on below link to access quality report \n ${SONAR_HOST_URL}/dashboard?id=${SONAR_PROJECT_KEY}."
+                }
+            }
         }
 
         stage("Upload Artifact") {
