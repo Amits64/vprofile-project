@@ -84,7 +84,9 @@ pipeline {
                             -Dsonar.java.binaries=target/test-classes/com/visualpathit/account/controllerTest/ \
                             -Dsonar.junit.reportsPath=target/surefire-reports/ \
                             -Dsonar.jacoco.reportsPath=target/jacoco.exec \
-                            -Dsonar.java.checkstyle.reportPaths=target/checkstyle-result.xml
+                            -Dsonar.java.checkstyle.reportPaths=target/checkstyle-result.xml \
+                            -Dsonar.analysis.mode=preview \
+                            -Dsonar.report.export.path=sonar-report-task.txt
                             """
                         }
                     }
@@ -92,10 +94,21 @@ pipeline {
             }
             post {
                 always {
-                    echo 'Slack Notifications.'
-                    slackSend channel: '#jenkinscicd',
-                        color: COLOR_MAP[currentBuild.currentResult],
-                        message: "Click on below link to access quality report \n ${SONAR_HOST_URL}/dashboard?id=${SONAR_PROJECT_KEY}."
+                    echo 'Sending Slack Notifications...'
+                    script {
+                        def analysisStatus = sh(script: "cat sonar-report-task.txt | grep 'Status:' | awk '{print \$2}'", returnStdout: true).trim()
+                        def analysisLink = sh(script: "cat sonar-report-task.txt | grep 'More about the report processing' | awk '{print \$5}'", returnStdout: true).trim()
+
+                        slackSend(
+                            channel: '#jenkinscicd',
+                            color: COLOR_MAP[currentBuild.currentResult],
+                            message: """
+                            *${currentBuild.currentResult}:* SonarQube analysis for ${env.JOB_NAME} build ${env.BUILD_NUMBER}
+                            Status: ${analysisStatus}
+                            More info: ${analysisLink}
+                            """
+                        )
+                    }
                 }
             }
         }
