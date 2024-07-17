@@ -92,7 +92,7 @@ pipeline {
             }
         }*/
 
-        stage("UploadArtifact") {
+        stage("Upload Artifact") {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'nexuslogin', usernameVariable: 'NEXUS_USER', passwordVariable: 'NEXUS_PASS')]) {
                     nexusArtifactUploader(
