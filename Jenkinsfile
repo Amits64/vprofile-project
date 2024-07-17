@@ -67,7 +67,7 @@ pipeline {
             }
         }
 
-        /*stage('Code Quality') {
+        stage('Code Quality') {
             steps {
                 script {
                     docker.image(env.SONAR_SCANNER_IMAGE).inside('-u root -e JAVA_HOME=${JAVA_HOME} -e PATH=${JAVA_HOME}/bin:${env.PATH}') {
@@ -90,7 +90,7 @@ pipeline {
                     }
                 }
             }
-        }*/
+        }
 
         stage("Upload Artifact") {
             steps {
