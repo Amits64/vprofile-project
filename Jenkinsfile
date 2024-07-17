@@ -65,7 +65,7 @@ pipeline {
         stage('Code Quality') {
             steps {
                 script {
-                    docker.image(env.SONAR_SCANNER_IMAGE).inside('-u root -e JAVA_HOME=${JAVA_HOME} -e PATH=${JAVA_HOME}/bin:/opt/sonar-scanner/bin:${env.PATH}') {
+                    docker.image(env.SONAR_SCANNER_IMAGE).inside('-u root') {
                         withSonarQubeEnv('sonarqube') {
                             sh """
                             export JAVA_HOME=${JAVA_HOME}
