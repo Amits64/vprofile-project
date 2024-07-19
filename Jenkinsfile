@@ -8,6 +8,7 @@ pipeline {
     tools {
         maven "MAVEN3"
         jdk "OracleJDK8"
+        dockerTool "Docker"
     }
 
     environment {
@@ -22,8 +23,6 @@ pipeline {
         SONAR_PROJECT_KEY = 'vprofile-app'
         SONAR_HOST_URL = 'http://192.168.10.10:9000/'
         SONAR_PROJECT_NAME = 'vprofile-app'
-        JAVA_HOME = tool name: 'OracleJDK8'
-        PATH = "${JAVA_HOME}/bin:${env.PATH}"
     }
 
     stages {
@@ -74,10 +73,6 @@ pipeline {
                     docker.image(env.SONAR_SCANNER_IMAGE).inside('-u root') {
                         withSonarQubeEnv('sonarqube') {
                             sh """
-                            echo "JAVA_HOME=${JAVA_HOME}"
-                            echo "PATH=${JAVA_HOME}/bin:${env.PATH}"
-                            which java
-                            java -version
                             /opt/sonar-scanner/bin/sonar-scanner \
                             -Dsonar.projectKey=${env.SONAR_PROJECT_KEY} \
                             -Dsonar.projectName=${SONAR_PROJECT_NAME} \
