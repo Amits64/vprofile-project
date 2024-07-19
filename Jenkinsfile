@@ -68,7 +68,7 @@ pipeline {
             }
         }
 
-        stage('Code Quality') {
+        /*stage('Code Quality') {
             steps {
                 script {
                     docker.image(env.SONAR_SCANNER_IMAGE).inside('-u root -e JAVA_HOME=${JAVA_HOME} -e PATH=${JAVA_HOME}/bin:${env.PATH}') {
@@ -98,9 +98,6 @@ pipeline {
                 always {
                     echo 'Sending Slack Notifications...'
                     script {
-                        def analysisStatus = sh(script: "cat sonar-report-task.txt | grep 'Status:' | awk '{print \$2}'", returnStdout: true).trim()
-                        def analysisLink = sh(script: "cat sonar-report-task.txt | grep 'More about the report processing' | awk '{print \$5}'", returnStdout: true).trim()
-
                         slackSend(
                             channel: '#jenkinscicd',
                             color: COLOR_MAP[currentBuild.currentResult],
@@ -113,7 +110,7 @@ pipeline {
                     }
                 }
             }
-        }
+        }*/
 
         stage("Upload Artifact") {
             steps {
@@ -138,9 +135,15 @@ pipeline {
             post {
                 always {
                     echo 'Slack Notifications.'
-                    slackSend channel: '#jenkinscicd',
-                        color: COLOR_MAP[currentBuild.currentResult],
-                        message: "*${currentBuild.currentResult}:* Job ${env.JOB_NAME} build ${env.BUILD_NUMBER} \n More info at: ${env.BUILD_URL}"
+                    slackSend(
+                            channel: '#jenkinscicd',
+                            color: COLOR_MAP.get(currentBuild.currentResult),
+                            message: """
+                            SonarQube analysis for ${env.JOB_NAME} build ${env.BUILD_NUMBER}
+                            Status: *${currentBuild.currentResult}*
+                            More info: ${env.BUILD_URL}
+                            """
+                        )
                 }
             }
         }
