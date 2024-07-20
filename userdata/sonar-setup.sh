@@ -1,39 +1,52 @@
 #!/bin/bash
-cp /etc/sysctl.conf /root/sysctl.conf_backup
-cat <<EOT> /etc/sysctl.conf
+
+# Backup existing configuration files
+sudo cp /etc/sysctl.conf /root/sysctl.conf_backup
+sudo cp /etc/security/limits.conf /root/sec_limit.conf_backup
+
+# Update sysctl.conf
+cat <<EOT | sudo tee /etc/sysctl.conf
 vm.max_map_count=262144
 fs.file-max=65536
 ulimit -n 65536
 ulimit -u 4096
 EOT
-cp /etc/security/limits.conf /root/sec_limit.conf_backup
-cat <<EOT> /etc/security/limits.conf
+
+# Update limits.conf
+cat <<EOT | sudo tee /etc/security/limits.conf
 sonarqube   -   nofile   65536
-sonarqube   -   nproc    409
+sonarqube   -   nproc    4096
 EOT
 
+# Install Java
 sudo apt-get update -y
 sudo apt-get install openjdk-11-jdk -y
 sudo update-alternatives --config java
 
+# Verify Java installation
 java -version
 
-sudo apt update
+# Install PostgreSQL
+sudo apt-get update
 wget -q https://www.postgresql.org/media/keys/ACCC4CF8.asc -O - | sudo apt-key add -
-
 sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt/ `lsb_release -cs`-pgdg main" >> /etc/apt/sources.list.d/pgdg.list'
-sudo apt install postgresql postgresql-contrib -y
-#sudo -u postgres psql -c "SELECT version();"
+sudo apt-get update
+sudo apt-get install postgresql postgresql-contrib -y
+
+# Configure PostgreSQL
 sudo systemctl enable postgresql.service
-sudo systemctl start  postgresql.service
-sudo echo "postgres:admin123" | chpasswd
-runuser -l postgres -c "createuser sonar"
+sudo systemctl start postgresql.service
+echo "postgres:admin123" | sudo chpasswd
+sudo -u postgres createuser sonar
 sudo -i -u postgres psql -c "ALTER USER sonar WITH ENCRYPTED PASSWORD 'admin123';"
 sudo -i -u postgres psql -c "CREATE DATABASE sonarqube OWNER sonar;"
-sudo -i -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE sonarqube to sonar;"
-systemctl restart  postgresql
-#systemctl status -l   postgresql
+sudo -i -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE sonarqube TO sonar;"
+sudo systemctl restart postgresql
+
+# Verify PostgreSQL is running
 netstat -tulpena | grep postgres
+
+# Download and install SonarQube
 sudo mkdir -p /sonarqube/
 cd /sonarqube/
 sudo curl -O https://binaries.sonarsource.com/Distribution/sonarqube/sonarqube-8.3.0.34182.zip
@@ -43,8 +56,10 @@ sudo mv /opt/sonarqube-8.3.0.34182/ /opt/sonarqube
 sudo groupadd sonar
 sudo useradd -c "SonarQube - User" -d /opt/sonarqube/ -g sonar sonar
 sudo chown sonar:sonar /opt/sonarqube/ -R
-cp /opt/sonarqube/conf/sonar.properties /root/sonar.properties_backup
-cat <<EOT> /opt/sonarqube/conf/sonar.properties
+
+# Update sonar.properties
+sudo cp /opt/sonarqube/conf/sonar.properties /root/sonar.properties_backup
+cat <<EOT | sudo tee /opt/sonarqube/conf/sonar.properties
 sonar.jdbc.username=sonar
 sonar.jdbc.password=admin123
 sonar.jdbc.url=jdbc:postgresql://localhost/sonarqube
@@ -56,7 +71,8 @@ sonar.log.level=INFO
 sonar.path.logs=logs
 EOT
 
-cat <<EOT> /etc/systemd/system/sonarqube.service
+# Create SonarQube systemd service
+cat <<EOT | sudo tee /etc/systemd/system/sonarqube.service
 [Unit]
 Description=SonarQube service
 After=syslog.target network.target
@@ -74,20 +90,22 @@ Restart=always
 LimitNOFILE=65536
 LimitNPROC=4096
 
-
 [Install]
 WantedBy=multi-user.target
 EOT
 
-systemctl daemon-reload
-systemctl enable sonarqube.service
-#systemctl start sonarqube.service
-#systemctl status -l sonarqube.service
-apt-get install nginx -y
-rm -rf /etc/nginx/sites-enabled/default
-rm -rf /etc/nginx/sites-available/default
-cat <<EOT> /etc/nginx/sites-available/sonarqube
-server{
+# Enable and start SonarQube service
+sudo systemctl daemon-reload
+sudo systemctl enable sonarqube.service
+# sudo systemctl start sonarqube.service
+# sudo systemctl status -l sonarqube.service
+
+# Install and configure Nginx
+sudo apt-get install nginx -y
+sudo rm -rf /etc/nginx/sites-enabled/default
+sudo rm -rf /etc/nginx/sites-available/default
+cat <<EOT | sudo tee /etc/nginx/sites-available/sonarqube
+server {
     listen      80;
     server_name sonarqube.groophy.in;
 
@@ -101,7 +119,7 @@ server{
         proxy_pass  http://127.0.0.1:9000;
         proxy_next_upstream error timeout invalid_header http_500 http_502 http_503 http_504;
         proxy_redirect off;
-              
+
         proxy_set_header    Host            \$host;
         proxy_set_header    X-Real-IP       \$remote_addr;
         proxy_set_header    X-Forwarded-For \$proxy_add_x_forwarded_for;
@@ -109,11 +127,14 @@ server{
     }
 }
 EOT
-ln -s /etc/nginx/sites-available/sonarqube /etc/nginx/sites-enabled/sonarqube
-systemctl enable nginx.service
-#systemctl restart nginx.service
+sudo ln -s /etc/nginx/sites-available/sonarqube /etc/nginx/sites-enabled/sonarqube
+sudo systemctl enable nginx.service
+# sudo systemctl restart nginx.service
+
+# Allow necessary ports through the firewall
 sudo ufw allow 80,9000,9001/tcp
 
+# Reboot the system
 echo "System reboot in 30 sec"
 sleep 30
-reboot
+sudo reboot
