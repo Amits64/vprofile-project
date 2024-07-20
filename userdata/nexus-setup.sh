@@ -22,11 +22,14 @@ sleep 5
 # Clean up
 rm -rf /tmp/nexus/nexus.tar.gz
 sudo cp -r /tmp/nexus/* /opt/nexus/
+
 sleep 5
 
 # Create nexus user
 sudo useradd nexus
 sudo chown -R nexus:nexus /opt/nexus
+sudo chmod -R 755 /opt/nexus
+sudo systemctl restart nexus
 
 # Create systemd service file
 sudo bash -c 'cat <<EOT > /etc/systemd/system/nexus.service
