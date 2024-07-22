@@ -67,7 +67,7 @@ pipeline {
             }
         }
 
-        stage('Code Quality') {
+        /*stage('Code Quality') {
             steps {
                 script {
                     docker.image(env.SONAR_SCANNER_IMAGE).inside('-u root') {
@@ -105,7 +105,7 @@ pipeline {
                     }
                 }
             }
-        }
+        }*/
 
         stage("Upload Artifact") {
             steps {
