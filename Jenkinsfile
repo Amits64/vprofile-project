@@ -23,6 +23,9 @@ pipeline {
         SONAR_PROJECT_KEY = 'vprofile-app'
         SONAR_HOST_URL = 'http://192.168.2.20:9000/'
         SONAR_PROJECT_NAME = 'vprofile-app'
+        registryCredentials = 'ecr:us-east-1:awscreds'
+        appRegistry = '654654622541.dkr.ecr.us-east-1.amazonaws.com/devops-tech'
+        vprofileRegistry = 'https://654654622541.dkr.ecr.us-east-1.amazonaws.com'
     }
 
     stages {
@@ -139,6 +142,25 @@ pipeline {
                             More info: ${env.BUILD_URL}
                             """
                         )
+                }
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    dockerImage = docker.build(appRegistry + ":$BUILD_NUMBER", "-f Dockerfile .")
+                }
+            }
+        }
+
+        stage('Upload Image to ECR Registry') {
+            steps {
+                script {
+                    docker.withRegistry(vprofileRegistry, registryCredentials) {
+                        dockerImage.push("$BUILD_NUMBER")
+                        dockerImage.push("latest")
+                    }
                 }
             }
         }
