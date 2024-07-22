@@ -21,7 +21,7 @@ pipeline {
         NEXUS_GRP_REPO = 'vpro-maven-group'
         SONAR_SCANNER_IMAGE = 'sonarsource/sonar-scanner-cli:latest'
         SONAR_PROJECT_KEY = 'vprofile-app'
-        SONAR_HOST_URL = 'http://192.168.10.10:9000/'
+        SONAR_HOST_URL = 'http://192.168.2.20:9000/'
         SONAR_PROJECT_NAME = 'vprofile-app'
     }
 
