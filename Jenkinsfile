@@ -129,7 +129,7 @@ pipeline {
                         protocol: 'http',
                         nexusUrl: "${NEXUSIP}:${NEXUSPORT}",
                         groupId: 'QA',
-                        version: "${env.BUILD_NUMBER},
+                        version: "${env.BUILD_NUMBER}",
                         repository: "${RELEASE_REPO}",
                         credentialsId: "${NEXUS_LOGIN}",
                         artifacts: [
