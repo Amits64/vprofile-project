@@ -62,6 +62,11 @@ pipeline {
                     sh 'mvn -s settings.xml test'
                 }
             }
+            post {
+                always {
+                    junit '**/target/surefire-reports/*.xml'
+                }
+            }
         }
 
         stage('Checkstyle Analysis') {
@@ -72,7 +77,20 @@ pipeline {
             }
         }
 
-        /*stage('Code Quality') {
+        stage('Code Coverage') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'nexuslogin', usernameVariable: 'NEXUS_USER', passwordVariable: 'NEXUS_PASS')]) {
+                    sh 'mvn -s settings.xml jacoco:prepare-agent test jacoco:report'
+                }
+            }
+            post {
+                always {
+                    jacoco execPattern: '**/target/jacoco.exec', classPattern: '**/target/classes', sourcePattern: '**/src/main/java'
+                }
+            }
+        }
+
+        stage('SonarQube Analysis') {
             steps {
                 script {
                     docker.image(env.SONAR_SCANNER_IMAGE).inside('-u root') {
@@ -87,32 +105,23 @@ pipeline {
                             -Dsonar.junit.reportsPath=target/surefire-reports/ \
                             -Dsonar.jacoco.reportsPath=target/jacoco.exec \
                             -Dsonar.java.checkstyle.reportPaths=target/checkstyle-result.xml \
-                            -Dsonar.analysis.mode=preview \
-                            -Dsonar.report.export.path=sonar-report-task.txt
+                            -Dsonar.host.url=${env.SONAR_HOST_URL}
                             """
                         }
                     }
                 }
             }
-            post {
-                always {
-                    echo 'Sending Slack Notifications...'
-                    script {
-                        slackSend(
-                            channel: '#jenkinscicd',
-                            color: COLOR_MAP[currentBuild.currentResult],
-                            message: """
-                            SonarQube analysis for ${env.JOB_NAME} build ${env.BUILD_NUMBER}
-                            Status: *${currentBuild.currentResult}*
-                            More info: ${analysisLink}
-                            """
-                        )
-                    }
+        }
+
+        stage('Quality Gate') {
+            steps {
+                timeout(time: 5, unit: 'MINUTES') {
+                    waitForQualityGate abortPipeline: true
                 }
             }
-        }*/
+        }
 
-        stage("Upload Artifact") {
+        stage('Upload Artifact') {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'nexuslogin', usernameVariable: 'NEXUS_USER', passwordVariable: 'NEXUS_PASS')]) {
                     nexusArtifactUploader(
