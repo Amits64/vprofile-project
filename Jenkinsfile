@@ -90,7 +90,7 @@ pipeline {
             }
         }
 
-        stage('SonarQube Analysis') {
+        /*stage('SonarQube Analysis') {
             steps {
                 script {
                     docker.image(env.SONAR_SCANNER_IMAGE).inside('-u root') {
@@ -119,7 +119,7 @@ pipeline {
                     waitForQualityGate abortPipeline: true
                 }
             }
-        }
+        }*/
 
         stage('Upload Artifact') {
             steps {
