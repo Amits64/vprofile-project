@@ -163,9 +163,9 @@ pipeline {
                     dockerImage = docker.build(appRegistry + ":$BUILD_NUMBER", "-f Dockerfile .")
                 }
             }
-        }
+        }*/
 
-        stage('Upload Image to ECR Registry') {
+        /*stage('Upload Image to ECR Registry') {
             steps {
                 script {
                     docker.withRegistry(vprofileRegistry, registryCredentials) {
@@ -174,9 +174,9 @@ pipeline {
                     }
                 }
             }
-        }
+        }*/
 
-        stage('Deploy to ECS staging') {
+        /*stage('Deploy to ECS staging') {
             steps {
                 withAWS(credentials: 'awscreds', region: 'us-east-1') {
                     sh 'aws ecs update-service --cluster ${cluster} --service ${service} --force'
