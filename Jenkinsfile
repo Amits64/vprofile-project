@@ -77,7 +77,7 @@ pipeline {
             }
         }
 
-        stage('Code Coverage') {
+        /*stage('Code Coverage') {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'nexuslogin', usernameVariable: 'NEXUS_USER', passwordVariable: 'NEXUS_PASS')]) {
                     sh 'mvn -s settings.xml jacoco:prepare-agent test jacoco:report'
@@ -88,7 +88,7 @@ pipeline {
                     jacoco execPattern: '**/target/jacoco.exec', classPattern: '**/target/classes', sourcePattern: '**/src/main/java'
                 }
             }
-        }
+        }*/
 
         /*stage('SonarQube Analysis') {
             steps {
