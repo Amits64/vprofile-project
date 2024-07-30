@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vproapp
+  labels:
+    app: vproapp
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: vproapp
+  template:
+    metadata:
+      labels:
+        app: vproapp
+    spec:
+      containers:
+        - name: vproapp
+          image: amits64/vprofileapp:v2
+          ports:
+            - name: vproapp-port
+              containerPort: 8080
+      initContainers:
+        - name: init-mydb
+          image: busybox
+          command: ["sh", "-c", "until nc -zv vprodb 3306; do echo waiting for mydb; sleep 2; done;"]
+        - name: init-memcache
+          image: busybox
+          command: ["sh", "-c", "until nc -zv vprocache01 11211; do echo waiting for memcache; sleep 2; done;"]
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: vproapp-service
+spec:
+  selector:
+    app: vproapp
+  ports:
+  - port: 80
+    targetPort: vproapp-port
+    protocol: TCP
+  type: NodePort
