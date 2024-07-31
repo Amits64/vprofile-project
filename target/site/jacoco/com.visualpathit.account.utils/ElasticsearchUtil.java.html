@@ -35,14 +35,14 @@ import com.visualpathit.account.beans.Components;
 <span class="nc" id="L35">    			.build();</span>
 <span class="nc" id="L36">    	client = new PreBuiltTransportClient(settings)</span>
 <span class="nc" id="L37">                .addTransportAddress(</span>
-                new InetSocketTransportAddress(
+<span class="nc" id="L38">                new InetSocketTransportAddress(</span>
 <span class="nc" id="L39">                		new InetSocketAddress(elasticsearchHost, Integer.parseInt(elasticsearchPort))));</span>
 
         
-    	}
+<span class="nc" id="L42">    	}</span>
 <span class="nc" id="L43">    	catch (Exception e) {</span>
 <span class="nc" id="L44">			e.printStackTrace();</span>
-<span class="nc" id="L45">		}</span>
+		}
 <span class="nc" id="L46">    	return client;</span>
       }
 }

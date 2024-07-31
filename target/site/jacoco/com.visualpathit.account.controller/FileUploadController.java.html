@@ -52,7 +52,7 @@ import com.visualpathit.account.service.UserService;
 
 				// Create the file on server
 <span class="nc" id="L54">				File serverFile = new File(dir.getAbsolutePath()</span>
-						+ File.separator + name+&quot;.png&quot;);
+<span class="nc" id="L55">						+ File.separator + name+&quot;.png&quot;);</span>
 				//image saving 
 <span class="nc" id="L57">				User user = userService.findByUsername(userName);</span>
 <span class="nc" id="L58">				user.setProfileImg(name +&quot;.png&quot;);</span>
@@ -60,7 +60,7 @@ import com.visualpathit.account.service.UserService;
 <span class="nc" id="L60">				userService.save(user);</span>
 				
 <span class="nc" id="L62">				BufferedOutputStream stream = new BufferedOutputStream(</span>
-						new FileOutputStream(serverFile));
+<span class="nc" id="L63">						new FileOutputStream(serverFile));</span>
 <span class="nc" id="L64">				stream.write(bytes);</span>
 <span class="nc" id="L65">				stream.close();</span>
 
@@ -73,7 +73,7 @@ import com.visualpathit.account.service.UserService;
 			}
 		} else {
 <span class="nc" id="L75">			return &quot;You failed to upload &quot; + name +&quot;.png&quot;</span>
-					+ &quot; because the file was empty.&quot;;
+<span class="nc" id="L76">					+ &quot; because the file was empty.&quot;;</span>
 		}
 	}
 

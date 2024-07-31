@@ -29,7 +29,7 @@ import java.util.Set;
 <span class="nc" id="L29">        Set&lt;GrantedAuthority&gt; grantedAuthorities = new HashSet&lt;&gt;();</span>
 <span class="nc bnc" id="L30" title="All 2 branches missed.">        for (Role role : user.getRoles()) {</span>
 <span class="nc" id="L31">            grantedAuthorities.add(new SimpleGrantedAuthority(role.getName()));</span>
-<span class="nc" id="L32">        }</span>
+        }
 
 <span class="nc" id="L34">        return new org.springframework.security.core</span>
 <span class="nc" id="L35">        		   .userdetails.User(user.getUsername(), user.getPassword(), grantedAuthorities);</span>
